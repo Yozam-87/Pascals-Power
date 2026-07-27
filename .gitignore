@@ -1,0 +1,5 @@
+llama_server.log
+.env
+venv
+*.code-workspace
+profiles.json

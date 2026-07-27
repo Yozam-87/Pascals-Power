@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pascal's Power</title>
+    <style>
+        .ansi-red { color: #f87171; }
+        .ansi-green { color: #4ade80; }
+        .ansi-yellow { color: #facc15; }
+        .ansi-blue { color: #60a5fa; }
+        .ansi-magenta { color: #f472b6; }
+        .ansi-cyan { color: #22d3ee; }
+        .ansi-white { color: #f8fafc; }
+        .ansi-gray { color: #94a3b8; }
+        .ansi-bold { font-weight: bold; }
+        
+        ::-webkit-scrollbar { height: 8px; width: 8px; }
+        ::-webkit-scrollbar-track { background: #111827; }
+        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
+
+        .toast-enter { animation: slideIn 0.3s ease-out forwards; }
+        .toast-exit { animation: fadeOut 0.3s ease-in forwards; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+
+/* ---- RESET & BASE ---- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif; line-height: 1.5; }
+body { margin: 0; }
+button, input, select, textarea { font: inherit; color: inherit; }
+pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+img, svg, video { display: block; max-width: 100%; }
+
+/* ---- COLORS ---- */
+.bg-gray-950    { background-color: #030712; }
+.bg-gray-900    { background-color: #111827; }
+.bg-gray-800    { background-color: #1f2937; }
+.bg-gray-700    { background-color: #374151; }
+.bg-black       { background-color: #000000; }
+.bg-black\/75   { background-color: rgba(0, 0, 0, 0.75); }
+.bg-blue-600    { background-color: #2563eb; }
+.bg-green-600   { background-color: #16a34a; }
+.bg-green-700   { background-color: #15803d; }
+.bg-indigo-600  { background-color: #4f46e5; }
+.bg-purple-600  { background-color: #9333ea; }
+.bg-purple-700  { background-color: #7e22ce; }
+.bg-red-600     { background-color: #dc2626; }
+.bg-red-700     { background-color: #b91c1c; }
+.bg-red-800     { background-color: #991b1b; }
+.bg-red-900     { background-color: #7f1d1d; }
+.bg-yellow-600  { background-color: #ca8a04; }
+.bg-cyan-900\/50 { background-color: rgba(22, 78, 99, 0.5); }
+.bg-red-900\/60 { background-color: rgba(127, 29, 29, 0.6); }
+.bg-\[\#0a0a0a\]    { background-color: #0a0a0a; }
+.bg-\[\#0c0c0c\]    { background-color: #0c0c0c; }
+.text-white         { color: #f8fafc; }
+.text-gray-200      { color: #e2e8f0; }
+.text-gray-300      { color: #d1d5db; }
+.text-gray-400      { color: #9ca3af; }
+.text-gray-500      { color: #6b7280; }
+.text-gray-600      { color: #4b5563; }
+.text-black         { color: #000000; }
+.text-blue-300      { color: #93c5fd; }
+.text-blue-400      { color: #60a5fa; }
+.text-cyan-200      { color: #a5f3fc; }
+.text-cyan-400      { color: #22d3ee; }
+.text-green-300     { color: #86efac; }
+.text-green-400     { color: #4ade80; }
+.text-indigo-400    { color: #a5b4fc; }
+.text-purple-400    { color: #c084fc; }
+.text-red-200       { color: #fecaca; }
+.text-yellow-300    { color: #fde047; }
+.text-yellow-400    { color: #facc15; }
+.text-yellow-500    { color: #eab308; }
+.border-gray-600    { border-color: #4b5563; }
+.border-gray-700    { border-color: #374151; }
+.border-gray-800    { border-color: #1f2937; }
+.border-gray-900    { border-color: #111827; }
+.border-indigo-500  { border-color: #6366f1; }
+.border-red-800     { border-color: #991b1b; }
+.border-cyan-800    { border-color: #155e75; }
+
+/* ---- DISPLAY ---- */
+.block       { display: block; }
+.grid        { display: grid; }
+.flex        { display: flex; }
+.hidden      { display: none; }
+
+/* ---- FLEXBOX ---- */
+.flex-col        { flex-direction: column; }
+.items-center    { align-items: center; }
+.items-end       { align-items: flex-end; }
+.items-start     { align-items: flex-start; }
+.justify-between { justify-content: space-between; }
+.justify-center  { justify-content: center; }
+.justify-end     { justify-content: flex-end; }
+.gap-1           { gap: 0.25rem; }
+.gap-2           { gap: 0.5rem; }
+.gap-3           { gap: 0.75rem; }
+.gap-4           { gap: 1rem; }
+.gap-6           { gap: 1.5rem; }
+.shrink-0        { flex-shrink: 0; }
+.flex-grow       { flex-grow: 1; }
+
+/* ---- GRID ---- */
+.grid-cols-1    { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+.grid-cols-2    { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-cols-3    { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid-cols-4    { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.col-span-1     { grid-column: span 1 / span 1; }
+.col-span-2     { grid-column: span 2 / span 2; }
+
+/* ---- SPACING — Padding ---- */
+.p-0  { padding: 0rem; }
+.p-1  { padding: 0.25rem; }
+.p-1\.5 { padding: 0.375rem; }
+.p-2  { padding: 0.5rem; }
+.p-3  { padding: 0.75rem; }
+.p-4  { padding: 1rem; }
+.p-5  { padding: 1.25rem; }
+.p-6  { padding: 1.5rem; }
+.px-1 { padding-left: 0.25rem; padding-right: 0.25rem; }
+.px-2 { padding-left: 0.5rem;  padding-right: 0.5rem; }
+.px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+.px-4 { padding-left: 1rem;    padding-right: 1rem; }
+.px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+.py-1 { padding-top: 0.25rem;  padding-bottom: 0.25rem; }
+.py-1\.5 { padding-top: 0.375rem;  padding-bottom: 0.375rem; }
+.py-2 { padding-top: 0.5rem;   padding-bottom: 0.5rem; }
+.py-3 { padding-top: 0.75rem;  padding-bottom: 0.75rem; }
+.py-4 { padding-top: 1rem;     padding-bottom: 1rem; }
+.py-5 { padding-top: 1.25rem;  padding-bottom: 1.25rem; }
+.py-6 { padding-top: 1.5rem;   padding-bottom: 1.5rem; }
+.pb-2 { padding-bottom: 0.5rem; }
+.pb-3 { padding-bottom: 0.75rem; }
+.pb-4 { padding-bottom: 1rem; }
+
+/* ---- SPACING — Margins ---- */
+.m-0   { margin: 0rem; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+.mb-0\.5 { margin-bottom: 0.125rem; }
+.mb-1  { margin-bottom: 0.25rem; }
+.mb-2  { margin-bottom: 0.5rem; }
+.mb-4  { margin-bottom: 1rem; }
+.mb-6  { margin-bottom: 1.5rem; }
+.mt-1  { margin-top: 0.25rem; }
+.mt-2  { margin-top: 0.5rem; }
+.mt-3  { margin-top: 0.75rem; }
+.mt-4  { margin-top: 1rem; }
+.mt-6  { margin-top: 1.5rem; }
+.my-2  { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+
+/* ---- SPACE-Y ---- */
+.space-y-2 > * + * { margin-top: 0.5rem; }
+.space-y-3 > * + * { margin-top: 0.75rem; }
+
+/* ---- WIDTH / HEIGHT ---- */
+.w-full       { width: 100%; }
+.w-1\/2       { width: 50%; }
+.w-1\/3       { width: 33.333333%; }
+.w-2\/3       { width: 66.666667%; }
+.w-1\/4       { width: 25%; }
+.w-3\/4       { width: 75%; }
+.w-auto       { width: auto; }
+.w-\[45\%\]  { width: 45%; }
+.w-\[10\%\]  { width: 10%; }
+.h-full       { height: 100%; }
+.h-screen     { height: 100vh; }
+.h-48         { height: 12rem; }
+.h-\[280px\]  { height: 280px; }
+.h-\[320px\]  { height: 320px; }
+.h-\[450px\]  { height: 450px; }
+.max-w-\[1600px\] { max-width: 1600px; }
+.max-w-4xl        { max-width: 56rem; }
+.max-w-full       { max-width: 100%; }
+
+/* ---- BORDER ---- */
+.border        { border-width: 1px; border-style: solid; }
+.border-0      { border-style: none; }
+.border-b      { border-bottom-width: 1px; border-bottom-style: solid; }
+.border-t      { border-top-width: 1px; }
+.border-r      { border-right-width: 1px; }
+.border-l      { border-left-width: 1px; }
+.rounded       { border-radius: 0.25rem; }
+.rounded-lg    { border-radius: 0.5rem; }
+.rounded-full  { border-radius: 9999px; }
+
+/* ---- TEXT / TYPOGRAPHY ---- */
+.text-xs    { font-size: 0.75rem;   line-height: 1rem; }
+.text-sm    { font-size: 0.875rem;  line-height: 1.25rem; }
+.text-base  { font-size: 1rem;      line-height: 1.5rem; }
+.text-lg    { font-size: 1.125rem;  line-height: 1.75rem; }
+.text-xl    { font-size: 1.25rem;   line-height: 1.75rem; }
+.text-2xl   { font-size: 1.5rem;    line-height: 2rem; }
+.text-3xl   { font-size: 1.875rem;  line-height: 2.25rem; }
+.text-\[10px\] { font-size: 10px; }
+.text-\[11px\] { font-size: 11px; }
+.text-\[13px\] { font-size: 13px; }
+.font-normal  { font-weight: 400; }
+.font-medium  { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold    { font-weight: 700; }
+.font-extrabold { font-weight: 800; }
+.font-sans  { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif; }
+.font-mono  { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+.text-left   { text-align: left; }
+.text-center { text-align: center; }
+.text-right  { text-align: right; }
+.italic { font-style: italic; }
+.underline { text-decoration: underline; }
+.uppercase { text-transform: uppercase; }
+.tracking-tight  { letter-spacing: -0.025em; }
+.tracking-wide   { letter-spacing: 0.025em; }
+.tracking-wider  { letter-spacing: 0.05em; }
+.leading-normal  { line-height: 1.5; }
+.leading-relaxed { line-height: 1.625; }
+
+/* ---- LAYOUT ---- */
+.overflow-hidden { overflow: hidden; }
+.overflow-y-auto { overflow-y: auto; }
+.overflow-x-auto { overflow-x: auto; }
+.whitespace-nowrap  { white-space: nowrap; }
+.whitespace-pre-wrap { white-space: pre-wrap; }
+.break-all   { word-break: break-all; }
+.break-words { overflow-wrap: break-word; }
+.relative { position: relative; }
+.absolute { position: absolute; }
+.fixed    { position: fixed; }
+.inset-0  { top: 0; right: 0; bottom: 0; left: 0; }
+.z-0  { z-index: 0; }
+.z-10 { z-index: 10; }
+.z-50 { z-index: 50; }
+
+/* ---- EFFECTS ---- */
+.cursor-pointer       { cursor: pointer; }
+.cursor-not-allowed   { cursor: not-allowed; }
+.select-none          { user-select: none; }
+.shadow       { box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); }
+.shadow-lg    { box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); }
+.shadow-xl    { box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); }
+.shadow-2xl   { box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+.shadow-inner { box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.06); }
+.opacity-0  { opacity: 0; }
+.opacity-50 { opacity: 0.5; }
+.opacity-75 { opacity: 0.75; }
+.opacity-100 { opacity: 1; }
+.transition {
+    transition-property: color, background-color, border-color,
+        text-decoration-color, fill, stroke, opacity, box-shadow,
+        transform, filter, backdrop-filter, visibility;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+/* ---- HOVER ---- */
+.hover\:bg-blue-500:hover       { background-color: #3b82f6; }
+.hover\:bg-gray-600:hover       { background-color: #4b5563; }
+.hover\:bg-gray-700:hover       { background-color: #374151; }
+.hover\:bg-gray-750:hover       { background-color: #2a3441; }
+.hover\:bg-green-500:hover      { background-color: #22c55e; }
+.hover\:bg-indigo-500:hover     { background-color: #6366f1; }
+.hover\:bg-purple-500:hover     { background-color: #a855f7; }
+.hover\:bg-purple-600:hover     { background-color: #9333ea; }
+.hover\:bg-red-500:hover        { background-color: #ef4444; }
+.hover\:bg-red-700:hover        { background-color: #b91c1c; }
+.hover\:bg-yellow-500:hover     { background-color: #eab308; }
+.hover\:bg-cyan-800:hover       { background-color: #155e75; }
+.hover\:text-white:hover        { color: #f8fafc; }
+.hw-btn { background-color: #111827; border: 1px solid #374151; border-radius: 0.25rem; padding: 0.375rem 0.5rem; }
+
+/* ---- OUTLINE ---- */
+.outline-none { outline: 2px solid transparent; outline-offset: 2px; }
+
+/* ---- RESPONSIVE — lg: (>= 1024px) ---- */
+@media (min-width: 1024px) {
+    .lg\:flex-row { flex-direction: row; }
+    .lg\:w-\[350px\] { width: 350px; }
+}
+
+/* ---- RESPONSIVE — xl: (>= 1280px) ---- */
+@media (min-width: 1280px) {
+    .xl\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .xl\:col-span-2  { grid-column: span 2 / span 2; }
+}
+
+/* ---- CUSTOM ---- */
+.toast-enter { animation: slideIn 0.3s ease-out forwards; }
+.toast-exit  { animation: fadeOut 0.3s ease-in forwards; }
+::placeholder { color: #4b5563; opacity: 1; }
+.placeholder-gray-600::placeholder { color: #4b5563; }
+input[type="checkbox"] { accent-color: #3b82f6; }
+::-webkit-scrollbar { height: 8px; width: 8px; }
+::-webkit-scrollbar-track { background: #111827; }
+::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #4b5563; }
+::selection { background-color: #3b82f6; color: #f8fafc; }
+.focus\:ring-blue-500:focus { outline: 2px solid #3b82f6; outline-offset: 1px; }
+.focus\:ring-green-500:focus { outline: 2px solid #22c55e; outline-offset: 1px; }
+.focus\:ring-purple-500:focus { outline: 2px solid #a855f7; outline-offset: 1px; }
+.focus\:ring-yellow-500:focus { outline: 2px solid #eab308; outline-offset: 1px; }
+    </style>
+</head>
+<body class="bg-gray-950 text-white p-6 font-sans">
+    
+    <div id="toastContainer" class="fixed top-6 right-6 z-50 flex flex-col gap-3"></div>
+
+    <datalist id="commonFlags">
+        <option value="--main-gpu">
+        <option value="--split-mode">
+        <option value="--reasoning">
+        <option value="--chat-template-kwargs">
+        <option value="--n-predict">
+        <option value="--slot-save-path">
+        <option value="--alias">
+        <option value="--cache-type-k">
+        <option value="--cache-type-v">
+    </datalist>
+
+    <datalist id="ggufFiles"></datalist>
+
+    <div class="max-w-[1600px] mx-auto flex flex-col gap-6">
+        
+        <div class="flex flex-col lg:flex-row gap-6 items-start">
+            
+            <!-- COLUMN 1: Sidebar -->
+            <div class="w-full lg:w-[350px] shrink-0 bg-gray-800 p-5 rounded-lg shadow-lg flex flex-col gap-2">
+                <h2 class="text-xl font-bold mb-4 border-b border-gray-700 pb-2">Saved Profiles</h2>
+                <select id="profileSelect" class="w-full bg-gray-700 p-2 rounded text-white outline-none focus:ring-blue-500" onchange="loadProfile()">
+                    <option value="">-- Select Profile --</option>
+                </select>
+                <input type="text" id="newProfileName" placeholder="New Profile Name" class="w-full bg-gray-700 p-2 rounded text-white mt-2 outline-none focus:ring-blue-500">
+                
+                <div class="space-y-2 mt-2 border-b border-gray-700 pb-4">
+                    <button onclick="saveProfile()" class="w-full bg-blue-600 hover:bg-blue-500 py-2 rounded font-bold transition shadow">💾 Save Profile</button>
+                    <button onclick="deleteProfile()" class="w-full bg-red-800 hover:bg-red-700 py-2 rounded font-bold transition shadow">🗑️ Delete Profile</button>
+                </div>
+
+                <!-- Generalized Hardware Spec Config Panel -->
+                <div class="mt-2 border-b border-gray-700 pb-4">
+                    <button onclick="toggleHardwarePanel()" class="hw-btn w-full text-left font-bold text-sm text-gray-400 hover:text-white hover:bg-gray-700 flex justify-between items-center transition">
+                        <span>⚙️ Hardware Config</span>
+                        <span id="hwToggleArrow">▶</span>
+                    </button>
+                    <div id="hardwarePanel" class="hidden mt-3 space-y-3 bg-gray-900 p-3 rounded border border-gray-700 text-xs">
+                        <div>
+                            <label class="block text-gray-400 mb-1">GPU 0 VRAM (GB)</label>
+                            <input type="number" step="0.1" id="gpu0_vram" class="w-full bg-gray-700 p-1.5 rounded text-white">
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 mb-1">GPU 0 Display Overhead (MB)</label>
+                            <input type="number" id="gpu0_overhead" class="w-full bg-gray-700 p-1.5 rounded text-white">
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 mb-1">GPU 0 Safety Buffer (MB)</label>
+                            <input type="number" id="gpu0_safety" class="w-full bg-gray-700 p-1.5 rounded text-white">
+                        </div>
+                        <hr class="border-gray-700 my-2">
+                        <div>
+                            <label class="block text-gray-400 mb-1">GPU 1 VRAM (GB)</label>
+                            <input type="number" step="0.1" id="gpu1_vram" class="w-full bg-gray-700 p-1.5 rounded text-white">
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 mb-1">GPU 1 Display Overhead (MB)</label>
+                            <input type="number" id="gpu1_overhead" class="w-full bg-gray-700 p-1.5 rounded text-white">
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 mb-1">GPU 1 Safety Buffer (MB)</label>
+                            <input type="number" id="gpu1_safety" class="w-full bg-gray-700 p-1.5 rounded text-white">
+                        </div>
+                        <button onclick="saveHardware()" class="w-full bg-purple-700 hover:bg-purple-600 py-1.5 rounded font-bold transition">Apply Hardware</button>
+                    </div>
+                </div>
+
+                <div class="mt-2 flex flex-col h-[280px]">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-sm font-bold text-blue-400">Generated Command</h3>
+                        <button id="copyCmdBtn" onclick="copyCommand()" class="bg-gray-700 hover:bg-gray-600 text-gray-200 px-2 py-1 rounded text-[10px] transition border border-gray-600 shadow">📋 Copy</button>
+                    </div>
+                    <pre id="commandPreview" class="w-full bg-[#0a0a0a] p-3 rounded font-mono text-[11px] overflow-y-auto whitespace-pre-wrap break-all border border-gray-800 flex-grow leading-normal shadow-inner"></pre>
+                </div>
+            </div>
+
+            <!-- COLUMN 2: Variables Stack -->
+            <div class="flex-grow bg-gray-800 p-5 rounded-lg shadow-lg w-full">
+                <div class="flex justify-between items-center border-b border-gray-700 pb-2 mb-4">
+                    <h2 class="text-2xl font-bold" id="currentProfileTitle">Editing Profile</h2>
+                    <button onclick="openImportModal()" class="bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded text-sm font-bold transition shadow">📥 Import Command</button>
+                </div>
+
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                    
+                    <!-- SECTION 1: Paths -->
+                    <div class="col-span-1 xl:col-span-2 bg-gray-900 p-4 rounded-lg border border-gray-700 space-y-2">
+                        <div class="flex justify-between items-center border-b border-gray-800 pb-2 mb-2">
+                            <h3 class="text-sm font-bold text-purple-400">Model Paths</h3>
+                            <div class="flex items-center gap-3">
+                                <span class="text-[10px] text-gray-500">Relative paths default to configured MODELS_DIR: {{ models_dir }}</span>
+                                <button onclick="autoDetectSplit()" class="bg-purple-600 hover:bg-purple-500 px-3 py-1 rounded font-bold text-xs transition shadow">🪄 Auto-Detect Split</button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 xl:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-0.5">Model Path (GGUF)</label>
+                                <input type="text" list="ggufFiles" autocomplete="off" id="modelPath" class="w-full bg-gray-700 p-1.5 rounded text-white text-sm focus:ring-purple-500 outline-none transition" placeholder="/path/to/models/model.gguf">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-0.5">Projector Path (MMProj)</label>
+                                <input type="text" list="ggufFiles" autocomplete="off" id="mmprojPath" class="w-full bg-gray-700 p-1.5 rounded text-white text-sm focus:ring-purple-500 outline-none transition" placeholder="/path/to/models/mmproj.gguf">
+                            </div>
+                        </div>
+                        <p id="calcStatus" class="text-xs text-yellow-400 hidden"></p>
+                    </div>
+
+                    <!-- SECTION 2: Layer Splitter Calculator -->
+                    <div class="bg-gray-900 p-4 rounded-lg border border-gray-700 space-y-3">
+                        <div class="flex justify-between items-center border-b border-gray-800 pb-2">
+                            <h3 class="text-sm font-bold text-blue-400">Layer Splitter Calculator</h3>
+                            <span class="text-[10px] text-gray-500 italic">Auto-fills fields below (Fields remain fully editable)</span>
+                        </div>
+                        <div class="grid grid-cols-4 gap-3 items-end">
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1">Total Layers</label>
+                                <input type="number" id="totalLayers" value="30" class="w-full bg-gray-700 p-1.5 rounded text-white text-sm outline-none focus:ring-blue-500" oninput="applySplitterToFlags()">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-green-400 mb-1 font-semibold" id="cuda0_label">CUDA 0 Layers</label>
+                                <input type="number" id="cuda0" value="2" class="w-full bg-gray-700 p-1.5 rounded text-white text-sm outline-none focus:ring-blue-500" oninput="applySplitterToFlags()">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-blue-400 mb-1 font-semibold" id="cuda1_label">CUDA 1 Layers</label>
+                                <input type="number" id="cuda1" value="20" class="w-full bg-gray-700 p-1.5 rounded text-white text-sm outline-none focus:ring-blue-500" oninput="applySplitterToFlags()">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-yellow-400 mb-1 font-semibold" id="cpu_label">CPU Layers</label>
+                                <input type="number" id="cpuLayers" class="w-full bg-gray-800 p-1.5 rounded text-gray-400 text-sm cursor-not-allowed" readonly>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mt-2">
+                            <!-- UNLOCKED FIELDS: Now editable and focusable -->
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1">Layers (--n-gpu-layers)</label>
+                                <input type="text" id="flag_n_gpu_layers" class="w-full bg-gray-700 text-white p-1.5 rounded text-xs border border-gray-600 outline-none focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1">Tensor Split (-ts)</label>
+                                <input type="text" id="flag_ts" class="w-full bg-gray-700 text-white p-1.5 rounded text-xs border border-gray-600 outline-none focus:ring-blue-500">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-[10px] text-gray-400 mb-1">MoE Regex (-ot)</label>
+                                <textarea id="flag_ot" class="w-full bg-gray-700 text-green-400 p-1.5 rounded font-mono text-[10px] border border-gray-600 outline-none focus:ring-blue-500" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 3: Performance Params -->
+                    <div class="bg-gray-900 p-4 rounded-lg border border-gray-700 space-y-3">
+                        <h3 class="text-sm font-bold text-green-400 border-b border-gray-800 pb-2">Core Performance & Context</h3>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1">Context Limit (--ctx-size)</label>
+                                <input type="number" id="flag_ctx_size" value="32768" class="w-full bg-gray-700 p-1.5 rounded text-white text-sm outline-none focus:ring-green-500">
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1">KV Cache (K)</label>
+                                    <select id="flag_cache_k" class="w-full bg-gray-700 p-1.5 rounded text-white text-xs outline-none focus:ring-green-500">
+                                        <option value="q8_0">q8_0</option>
+                                        <option value="q4_0">q4_0</option>
+                                        <option value="f16">f16</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1">KV Cache (V)</label>
+                                    <select id="flag_cache_v" class="w-full bg-gray-700 p-1.5 rounded text-white text-xs outline-none focus:ring-green-500">
+                                        <option value="q8_0">q8_0</option>
+                                        <option value="q4_0">q4_0</option>
+                                        <option value="f16">f16</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1">Threads</label>
+                                    <input type="number" id="flag_threads" value="6" class="w-full bg-gray-700 p-1.5 rounded text-white text-sm outline-none focus:ring-green-500">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1">Batch Threads</label>
+                                    <input type="number" id="flag_threads_batch" value="12" class="w-full bg-gray-700 p-1.5 rounded text-white text-sm outline-none focus:ring-green-500">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1">Batch Size</label>
+                                    <input type="number" id="flag_batch_size" value="2048" class="w-full bg-gray-700 p-1.5 rounded text-white text-sm outline-none focus:ring-green-500">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1">Ubatch Size</label>
+                                    <input type="number" id="flag_ubatch_size" value="2048" class="w-full bg-gray-700 p-1.5 rounded text-white text-sm outline-none focus:ring-green-500">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 4: Toggles & Sampling -->
+                    <div class="bg-gray-900 p-4 rounded-lg border border-gray-700 flex flex-col gap-3">
+                        <h3 class="text-sm font-bold text-yellow-500 border-b border-gray-800 pb-2">Sampling Specs</h3>
+                        <div class="grid grid-cols-3 gap-2 text-xs border-b border-gray-800 pb-3">
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1">Temp</label>
+                                <input type="number" step="0.05" id="flag_temp" placeholder="1.0" class="w-full bg-gray-700 p-1.5 rounded text-white outline-none focus:ring-yellow-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1">Top-P</label>
+                                <input type="number" step="0.05" id="flag_top_p" placeholder="0.9" class="w-full bg-gray-700 p-1.5 rounded text-white outline-none focus:ring-yellow-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1">Min-P</label>
+                                <input type="number" step="0.05" id="flag_min_p" placeholder="0.1" class="w-full bg-gray-700 p-1.5 rounded text-white outline-none focus:ring-yellow-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1">Top-K</label>
+                                <input type="number" id="flag_top_k" placeholder="20" class="w-full bg-gray-700 p-1.5 rounded text-white outline-none focus:ring-yellow-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1">Rep Pen</label>
+                                <input type="number" step="0.05" id="flag_repeat_penalty" placeholder="1.1" class="w-full bg-gray-700 p-1.5 rounded text-white outline-none focus:ring-yellow-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1">Rep Tokens</label>
+                                <input type="number" id="flag_repeat_last_n" placeholder="64" class="w-full bg-gray-700 p-1.5 rounded text-white outline-none focus:ring-yellow-500">
+                            </div>
+                        </div>
+                        
+                        <h3 class="text-sm font-bold text-blue-400 mt-1 border-b border-gray-800 pb-2">Server & Toggles</h3>
+                        <div class="grid grid-cols-3 gap-3 mb-1">
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1">Host (--host)</label>
+                                <input type="text" id="flag_host" value="0.0.0.0" class="w-full bg-gray-700 p-1.5 rounded text-white text-sm outline-none focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1">Port (--port)</label>
+                                <input type="number" id="flag_port" value="5001" class="w-full bg-gray-700 p-1.5 rounded text-white text-sm outline-none focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1">Reasoning Mode</label>
+                                <select id="flag_reasoning" class="w-full bg-gray-700 p-1.5 rounded text-white text-sm outline-none focus:ring-blue-500">
+                                    <option value="">(None)</option>
+                                    <option value="on">on</option>
+                                    <option value="off">off</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-4 gap-2 text-xs">
+                            <label class="flex items-center gap-1 cursor-pointer bg-gray-800 p-1.5 rounded hover:bg-gray-750 border border-gray-700 transition">
+                                <input type="checkbox" id="flag_fa" class="rounded bg-gray-700 border-gray-600"> <span>FA</span>
+                            </label>
+                            <label class="flex items-center gap-1 cursor-pointer bg-gray-800 p-1.5 rounded hover:bg-gray-750 border border-gray-700 transition">
+                                <input type="checkbox" id="flag_mlock" class="rounded bg-gray-700 border-gray-600"> <span>MLock</span>
+                            </label>
+                            <label class="flex items-center gap-1 cursor-pointer bg-gray-800 p-1.5 rounded hover:bg-gray-750 border border-gray-700 transition">
+                                <input type="checkbox" id="flag_no_mmap" class="rounded bg-gray-700 border-gray-600"> <span>NoMMap</span>
+                            </label>
+                            <label class="flex items-center gap-1 cursor-pointer bg-gray-800 p-1.5 rounded hover:bg-gray-750 border border-gray-700 transition">
+                                <input type="checkbox" id="flag_jinja" class="rounded bg-gray-700 border-gray-600"> <span>Jinja</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 5: Custom Flags -->
+                    <div class="bg-gray-900 p-4 rounded-lg border border-gray-700 flex flex-col h-[320px]">
+                        <div class="flex justify-between items-center border-b border-gray-800 pb-2 mb-2">
+                            <h3 class="text-sm font-bold text-cyan-400">Custom Flags</h3>
+                            <button onclick="addFlagRow('', '')" class="bg-cyan-900/50 hover:bg-cyan-800 border border-cyan-800 text-cyan-200 px-2 py-1 rounded text-xs transition">+ Add Flag</button>
+                        </div>
+                        <div class="flex gap-2 px-1 mb-1">
+                            <span class="w-[45%] text-[10px] text-gray-500 font-bold uppercase tracking-wider">Flag Name</span>
+                            <span class="w-[45%] text-[10px] text-gray-500 font-bold uppercase tracking-wider">Value</span>
+                        </div>
+                        <div id="flagsContainer" class="flex flex-col gap-2 overflow-y-auto flex-grow p-1">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTTOM SECTION: Logs ONLY -->
+        <div class="bg-gray-800 p-5 rounded-lg shadow-lg w-full flex flex-col">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
+                <div class="flex items-center gap-3">
+                    <h3 class="text-lg font-bold text-green-400">Server Terminal Logs</h3>
+                    <label class="flex items-center gap-1 text-xs text-gray-400 cursor-pointer">
+                        <input type="checkbox" id="autoScrollLogs" checked class="rounded bg-gray-700"> Auto-scroll
+                    </label>
+                    <span id="currentProfileBadge" class="text-xs font-bold px-2.5 py-1 rounded select-none bg-indigo-900/50 text-indigo-300 border border-indigo-700/50 hidden"></span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span id="serverStatus" class="text-xs font-bold px-3 py-1.5 rounded select-none bg-red-900 text-red-200">Checking...</span>
+                    <button onclick="startServer()" class="bg-green-600 hover:bg-green-500 px-4 py-1.5 rounded text-sm font-bold shadow transition">▶ Launch</button>
+                    <button onclick="restartServer()" class="bg-yellow-600 hover:bg-yellow-500 px-4 py-1.5 rounded text-sm font-bold shadow text-black transition">🔄 Restart</button>
+                    <button onclick="stopServer()" class="bg-red-600 hover:bg-red-500 px-4 py-1.5 rounded text-sm font-bold shadow transition">■ Stop</button>
+                </div>
+            </div>
+            
+            <pre id="logOutput" class="w-full h-[450px] bg-[#0c0c0c] text-gray-300 p-5 rounded font-mono text-[13px] overflow-y-auto whitespace-pre-wrap break-words border border-gray-900 leading-relaxed tracking-tight shadow-inner">No logs yet. Click 'Launch' to begin...</pre>
+        </div>
+    </div>
+
+    <!-- Import Modal Overlay -->
+    <div id="importModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-2xl w-full max-w-4xl border border-gray-700">
+            <h2 class="text-xl font-bold mb-2 text-indigo-400">📥 Import Command Profile</h2>
+            <p class="text-sm text-gray-400 mb-4">Paste your raw terminal command below. The manager will automatically parse the flags, sync the layer splitter, and map them to the UI.</p>
+            <textarea id="importCmdText" class="w-full bg-[#0a0a0a] text-green-400 p-4 rounded font-mono text-[13px] border border-gray-700 h-48 mb-4 leading-normal" placeholder="KEY=VALUE ./llama-server --model /path/model.gguf -ot 'blk\.(0|1)\..*' ..."></textarea>
+            <div class="flex justify-end gap-3">
+                <button onclick="closeImportModal()" class="bg-gray-700 hover:bg-gray-600 px-5 py-2 rounded font-bold transition border border-gray-600">Cancel</button>
+                <button onclick="applyImportedCommand()" class="bg-indigo-600 hover:bg-indigo-500 px-5 py-2 rounded font-bold transition shadow border border-indigo-500">Parse & Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let profiles = {};
+        let logInterval = null;
+        let isMoe = false; 
+        let currentLogText = ""; 
+
+        // All structured parameters now dynamically read from their individual text boxes.
+        const fieldMapping = {
+            "--n-gpu-layers": "flag_n_gpu_layers",
+            "-ts": "flag_ts",
+            "-ot": "flag_ot",
+            "--ctx-size": "flag_ctx_size",
+            "--threads": "flag_threads",
+            "--threads-batch": "flag_threads_batch",
+            "--batch-size": "flag_batch_size",
+            "--ubatch-size": "flag_ubatch_size",
+            "--cache-type-k": "flag_cache_k",
+            "--cache-type-v": "flag_cache_v",
+            "--host": "flag_host",
+            "--port": "flag_port",
+            "--temp": "flag_temp",
+            "--top-p": "flag_top_p",
+            "--min-p": "flag_min_p",
+            "--top-k": "flag_top_k",
+            "--repeat-penalty": "flag_repeat_penalty",
+            "--repeat-last-n": "flag_repeat_last_n",
+            "--reasoning": "flag_reasoning"
+        };
+
+        const checkboxMapping = {
+            "-fa": "flag_fa",
+            "--mlock": "flag_mlock",
+            "--no-mmap": "flag_no_mmap",
+            "--jinja": "flag_jinja"
+        };
+
+        // ==========================================
+        // Toast Notifications
+        // ==========================================
+        function showToast(msg, type="success") {
+            const container = document.getElementById("toastContainer");
+            const toast = document.createElement("div");
+            let bgColor = type === "error" ? "bg-red-800" : "bg-green-700";
+            
+            toast.className = `toast-enter flex items-center px-4 py-3 rounded shadow-lg text-sm font-bold text-white ${bgColor}`;
+            toast.innerHTML = msg;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.replace("toast-enter", "toast-exit");
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // ==========================================
+        // Backend File Fetching for Datalist
+        // ==========================================
+        async function fetchModels() {
+            try {
+                const res = await fetch("/api/models");
+                const models = await res.json();
+                const datalist = document.getElementById("ggufFiles");
+                datalist.innerHTML = "";
+                models.forEach(m => {
+                    let opt = document.createElement("option");
+                    opt.value = m;
+                    datalist.appendChild(opt);
+                });
+            } catch (e) {
+                console.error("Could not fetch models datalist:", e);
+            }
+        }
+
+        // ==========================================
+        // Command Preview with Syntax Highlighting
+        // ==========================================
+        function copyCommand() {
+            const cmd = document.getElementById("commandPreview").innerText;
+            navigator.clipboard.writeText(cmd).then(() => {
+                const btn = document.getElementById("copyCmdBtn");
+                const og = btn.innerHTML;
+                btn.innerHTML = "✅ Copied!";
+                btn.classList.add("bg-green-700", "text-white");
+                setTimeout(() => {
+                    btn.innerHTML = og;
+                    btn.classList.remove("bg-green-700", "text-white");
+                }, 2000);
+            });
+        }
+
+        function updateCommandPreview() {
+            let serverPath = (serverConfig && serverConfig.serverPath) || "./llama-server";
+            let envVars = serverConfig && serverConfig.envVars ? serverConfig.envVars : null;
+            let cmd = [serverPath];
+            // Prepend env vars as 'KEY=VALUE' prefix if any are configured
+            if (envVars) {
+                let prefix = Object.keys(envVars).map(k => `${k}=${envVars[k]}`).join(' ');
+                if (prefix) cmd.unshift(prefix);
+            }
+            let model = document.getElementById("modelPath").value.trim();
+            if(model) cmd.push(`  --model ${model}`);
+            
+            let mmproj = document.getElementById("mmprojPath").value.trim();
+            if(mmproj) cmd.push(`  --mmproj ${mmproj}`);
+
+            let flags = getCurrentFlags();
+            for (let k in flags) {
+                let v = flags[k];
+                if (v === true) {
+                    cmd.push(`  ${k}`);
+                }
+                else if (k === "-ot") {
+                    cmd.push(`  -ot '${v}'`);
+                }
+                // Wrap JSON strings safely
+                else if (typeof v === 'string' && (v.includes(' ') || v.includes('{') || v.includes('"') || v.includes("'"))) {
+                    if (!v.startsWith("'") && !v.endsWith("'")) {
+                        cmd.push(`  ${k} '${v}'`);
+                    } else {
+                        cmd.push(`  ${k} ${v}`);
+                    }
+                }
+                else {
+                    cmd.push(`  ${k} ${v}`);
+                }
+            }
+
+            let rawString = cmd.join(" \\\n");
+            let highlighted = rawString
+                .replace(/(^|\s)(--?[a-zA-Z0-9\-]+)/g, '$1<span class="text-blue-400 font-bold">$2</span>') 
+                .replace(/(\/home\/[^\s]+|\S+\.gguf)/g, '<span class="text-green-300">$1</span>')           
+                .replace(/('[^']*')/g, '<span class="text-yellow-300">$1</span>');                          
+            
+            document.getElementById("commandPreview").innerHTML = highlighted;
+        }
+
+        document.addEventListener('input', updateCommandPreview);
+        document.addEventListener('change', updateCommandPreview);
+
+        function openImportModal() {
+            document.getElementById("importCmdText").value = "";
+            document.getElementById("importModal").classList.remove("hidden");
+        }
+        function closeImportModal() { document.getElementById("importModal").classList.add("hidden"); }
+
+        function reverseParseSplitter(ot, ts) {
+            if (ot && ot.includes("CUDA")) {
+                isMoe = true;
+                let c0 = 0, c1 = 0, cpu = 0;
+                
+                let blocks = ot.split(',');
+                for (let b of blocks) {
+                    let m = b.match(/\((.*?)\)/);
+                    if (m) {
+                        let count = m[1].split('|').filter(x => x.trim() !== '').length;
+                        if (b.includes("CUDA0")) c0 += count;
+                        else if (b.includes("CUDA1")) c1 += count;
+                        else if (b.includes("CPU")) cpu += count;
+                    }
+                }
+                document.getElementById("cuda0").value = c0;
+                document.getElementById("cuda1").value = c1;
+                document.getElementById("totalLayers").value = c0 + c1 + cpu;
+            } else if (ts) {
+                isMoe = false;
+                let parts = ts.split(',');
+                let c0 = parseInt(parts[0]) || 0;
+                let c1 = parseInt(parts[1]) || 0;
+                document.getElementById("cuda0").value = c0;
+                document.getElementById("cuda1").value = c1;
+                let currTotal = parseInt(document.getElementById("totalLayers").value) || 0;
+                document.getElementById("totalLayers").value = Math.max(currTotal, c0 + c1);
+            }
+            
+            setSplitterLabels(isMoe);
+        }
+
+        function applyImportedCommand() {
+            const rawCmd = document.getElementById("importCmdText").value;
+            if (!rawCmd.trim()) return showToast("Please paste a command first.", "error");
+
+            document.getElementById("modelPath").value = "";
+            document.getElementById("mmprojPath").value = "";
+            for (let key in fieldMapping) {
+                let el = document.getElementById(fieldMapping[key]);
+                if(el) el.value = "";
+            }
+            for (let key in checkboxMapping) {
+                let el = document.getElementById(checkboxMapping[key]);
+                if(el) el.checked = false;
+            }
+            document.getElementById("flagsContainer").innerHTML = "";
+
+            let cleanCmd = rawCmd.replace(/\\\n/g, ' ').replace(/\s+/g, ' ').trim();
+            let parts = cleanCmd.split(' ');
+            let firstFlagIdx = parts.findIndex(p => p.startsWith('-'));
+            if (firstFlagIdx !== -1) cleanCmd = parts.slice(firstFlagIdx).join(' ');
+
+            let args = [];
+            let regex = /'[^']*'|"[^"]*"|\S+/g;
+            let match;
+            while ((match = regex.exec(cleanCmd)) !== null) args.push(match[0]);
+
+            let importedOt = "";
+            let importedTs = "";
+
+            for (let i = 0; i < args.length; i++) {
+                if (args[i].startsWith('-')) {
+                    let key = args[i];
+                    let value = true;
+
+                    if (i + 1 < args.length && (!args[i+1].startsWith('-') || !isNaN(args[i+1]))) {
+                        value = args[i+1];
+                        i++; 
+                        if ((value.startsWith("'") && value.endsWith("'")) || (value.startsWith('"') && value.endsWith('"'))) {
+                            value = value.substring(1, value.length - 1);
+                        }
+                    }
+
+                    if (key === "--chat-template-kwargs" && String(value).includes("preserve_thinking")) {
+                        key = "--reasoning";
+                        value = "on";
+                    }
+
+                    if (key === "--model") {
+                        document.getElementById("modelPath").value = value;
+                    } else if (key === "--mmproj") {
+                        document.getElementById("mmprojPath").value = value;
+                    } else if (key === "-ot") {
+                        importedOt = value;
+                    } else if (key === "-ts") {
+                        importedTs = value;
+                    } else if (key === "--n-gpu-layers") {
+                        document.getElementById("flag_n_gpu_layers").value = value;
+                    } else if (fieldMapping[key]) {
+                        let el = document.getElementById(fieldMapping[key]);
+                        if(el) el.value = value;
+                    } else if (checkboxMapping[key]) {
+                        let el = document.getElementById(checkboxMapping[key]);
+                        if(el) el.checked = (value !== "off" && value !== "false");
+                    } else {
+                        if (key.startsWith("-")) addFlagRow(key, value === true ? "" : value);
+                    }
+                }
+            }
+
+            // Sync visual sliders, but DO NOT overwrite the specific -ot and -ts parsed above!
+            reverseParseSplitter(importedOt, importedTs);
+            if (importedOt) document.getElementById("flag_ot").value = importedOt;
+            if (importedTs) document.getElementById("flag_ts").value = importedTs;
+
+            closeImportModal();
+            updateCommandPreview();
+            showToast("Command parsed and applied!");
+        }
+
+        function ansiToHtml(str) {
+            let lines = str.split('\n');
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i].includes('\r')) {
+                    let parts = lines[i].split('\r');
+                    lines[i] = parts[parts.length - 1]; 
+                }
+            }
+            let cleanStr = lines.join('\n');
+
+            let escaped = cleanStr.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            
+            let parsed = escaped.replace(/\x1b\[([0-9;]*)m/g, (match, p1) => {
+                if (!p1 || p1 === '0') return '</span>';
+                let codes = p1.split(';');
+                let classes = [];
+                for (let code of codes) {
+                    if (code === '1') classes.push('ansi-bold');
+                    else if (code === '30') classes.push('ansi-gray');
+                    else if (code === '31') classes.push('ansi-red');
+                    else if (code === '32') classes.push('ansi-green');
+                    else if (code === '33') classes.push('ansi-yellow');
+                    else if (code === '34') classes.push('ansi-blue');
+                    else if (code === '35') classes.push('ansi-magenta');
+                    else if (code === '36') classes.push('ansi-cyan');
+                    else if (code === '37') classes.push('ansi-white');
+                    else if (code === '90') classes.push('ansi-gray ansi-bold');
+                    else if (code === '91') classes.push('ansi-red ansi-bold');
+                    else if (code === '92') classes.push('ansi-green ansi-bold');
+                    else if (code === '93') classes.push('ansi-yellow ansi-bold');
+                    else if (code === '94') classes.push('ansi-blue ansi-bold');
+                    else if (code === '95') classes.push('ansi-magenta ansi-bold');
+                    else if (code === '96') classes.push('ansi-cyan ansi-bold');
+                }
+                if (classes.length > 0) return `<span class="${classes.join(' ')}">`;
+                return '</span>';
+            });
+            
+            let openCount = (parsed.match(/<span/g) || []).length;
+            let closeCount = (parsed.match(/<\/span/g) || []).length;
+            while (openCount > closeCount) { parsed += '</span>'; closeCount++; }
+            return parsed;
+        }
+
+        function startLogPolling() {
+            if (logInterval) clearInterval(logInterval);
+            logInterval = setInterval(async () => {
+                try {
+                    const res = await fetch("/api/logs");
+                    const data = await res.json();
+                    
+                    const statusBadge = document.getElementById("serverStatus");
+                    if (data.running) {
+                        statusBadge.innerText = "Running";
+                        statusBadge.className = "text-xs font-bold px-4 py-1.5 rounded select-none bg-green-900 text-green-200 shadow border border-green-800";
+                    } else {
+                        statusBadge.innerText = "Stopped";
+                        statusBadge.className = "text-xs font-bold px-4 py-1.5 rounded select-none bg-red-900 text-red-200 shadow border border-red-800";
+                    }
+
+                    const isSelecting = window.getSelection().toString().length > 0;
+                    if (isSelecting) return; 
+
+                    if (data.logs !== currentLogText) {
+                        currentLogText = data.logs;
+                        const logOutput = document.getElementById("logOutput");
+                        
+                        if (data.logs) {
+                            logOutput.innerHTML = ansiToHtml(data.logs);
+                        } else if (!data.running) {
+                            logOutput.innerText = "No logs yet. Click 'Launch' to begin...";
+                        }
+
+                        if (document.getElementById("autoScrollLogs").checked) {
+                            logOutput.scrollTop = logOutput.scrollHeight;
+                        }
+                    }
+                } catch (e) {
+                    console.error("Log poller error:", e);
+                }
+            }, 1000);
+        }
+
+        // ==========================================
+        // Splitter Calculator (Master Pushes to Inputs)
+        // ==========================================
+        function applySplitterToFlags() {
+            let total = parseInt(document.getElementById("totalLayers").value) || 0;
+            let c0 = parseInt(document.getElementById("cuda0").value) || 0;
+            let c1 = parseInt(document.getElementById("cuda1").value) || 0;
+            
+            if (total < 0) total = 0; document.getElementById("totalLayers").value = total;
+            if (c0 < 0) c0 = 0; document.getElementById("cuda0").value = c0;
+            if (c1 < 0) c1 = 0; document.getElementById("cuda1").value = c1;
+
+            if (c0 > total) { c0 = total; document.getElementById("cuda0").value = total; }
+            if (c0 + c1 > total) { c1 = total - c0; document.getElementById("cuda1").value = c1; }
+
+            let cpu = total - c0 - c1;
+            document.getElementById("cpuLayers").value = cpu;
+
+            if (isMoe) {
+                let result = [], currentBlock = 0;
+                function makeRange(start, count) {
+                    if(count <= 0) return "";
+                    let nums = [];
+                    for(let i=start; i < start + count; i++) nums.push(i);
+                    return `blk\\.(${nums.join('|')})\\..*_exps\\.`;
+                }
+
+                if(c0 > 0) { result.push(`${makeRange(currentBlock, c0)}=CUDA0`); currentBlock += c0; }
+                if(c1 > 0) { result.push(`${makeRange(currentBlock, c1)}=CUDA1`); currentBlock += c1; }
+                if(cpu > 0) result.push(`${makeRange(currentBlock, cpu)}=CPU`);
+
+                document.getElementById("flag_ot").value = result.join(",");
+                document.getElementById("flag_n_gpu_layers").value = total;
+                document.getElementById("flag_ts").value = "1,0";
+            } else {
+                document.getElementById("flag_ot").value = "";
+                document.getElementById("flag_n_gpu_layers").value = c0 + c1;
+                document.getElementById("flag_ts").value = `${c0},${c1}`;
+            }
+            updateCommandPreview();
+        }
+
+        function setSplitterLabels(moeState) {
+            isMoe = moeState;
+            document.getElementById("cuda0_label").innerText = isMoe ? "CUDA 0 Experts" : "CUDA 0 Layers";
+            document.getElementById("cuda1_label").innerText = isMoe ? "CUDA 1 Experts" : "CUDA 1 Layers";
+            document.getElementById("cpu_label").innerText = isMoe ? "CPU Experts" : "CPU Layers";
+        }
+
+        function addFlagRow(key, value) {
+            const container = document.getElementById("flagsContainer");
+            const row = document.createElement("div");
+            row.className = "flex gap-2 items-center flag-row w-full bg-gray-800/80 p-1.5 rounded border border-gray-700 shadow-sm";
+            row.innerHTML = `
+                <input type="text" list="commonFlags" value="${key}" placeholder="--flag-name" class="w-[45%] bg-gray-950 border border-gray-600 p-1.5 rounded flag-key text-blue-300 text-[11px] font-mono focus:ring-blue-500 outline-none placeholder-gray-600 transition">
+                <input type="text" value="${value.replace(/"/g, '&quot;')}" placeholder="value" class="w-[45%] bg-gray-950 border border-gray-600 p-1.5 rounded flag-value font-mono text-green-300 text-[11px] focus:ring-green-500 outline-none placeholder-gray-600 transition">
+                <button onclick="this.parentElement.remove(); updateCommandPreview();" class="w-[10%] bg-red-900/60 hover:bg-red-700 border border-red-800 text-red-200 py-1.5 rounded text-xs transition flex justify-center items-center shadow" title="Remove Flag">✕</button>
+            `;
+            container.appendChild(row);
+        }
+
+        function getCurrentFlags() {
+            let flags = {};
+            for (let key in fieldMapping) {
+                let el = document.getElementById(fieldMapping[key]);
+                if (el && el.value.trim() !== "") flags[key] = el.value.trim();
+            }
+            for (let key in checkboxMapping) {
+                let el = document.getElementById(checkboxMapping[key]);
+                if (el && el.checked) {
+                    if (key === "-fa") flags[key] = "on";
+                    else flags[key] = true;
+                }
+            }
+            document.querySelectorAll(".flag-row").forEach(row => {
+                let key = row.querySelector(".flag-key").value.trim();
+                let val = row.querySelector(".flag-value").value.trim();
+                if(key) flags[key] = val;
+            });
+            return flags;
+        }
+
+        async function autoDetectSplit() {
+            const modelPath = document.getElementById("modelPath").value.trim();
+            if (!modelPath) return showToast("Please enter a model path first.", "error");
+
+            document.getElementById("calcStatus").classList.remove("hidden");
+            document.getElementById("calcStatus").innerText = "Analyzing GGUF file... Please wait.";
+
+            try {
+                const res = await fetch("/api/analyze", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({ 
+                        model: modelPath, 
+                        mmproj: document.getElementById("mmprojPath").value.trim(),
+                        ctx_size: document.getElementById("flag_ctx_size").value || 8192, 
+                        kv_type: document.getElementById("flag_cache_k").value || "q4_0" 
+                    })
+                });
+                
+                const data = await res.json();
+                if(data.error) throw new Error(data.error);
+
+                setSplitterLabels(data.is_moe);
+                document.getElementById("totalLayers").value = data.total_layers;
+                document.getElementById("cuda0").value = data.c0;
+                document.getElementById("cuda1").value = data.c1;
+                
+                applySplitterToFlags(); 
+
+                document.getElementById("calcStatus").classList.add("hidden");
+                showToast(data.is_moe ? "MoE detected. Overrides populated." : "Dense Model detected. Overrides populated.");
+            } catch (err) {
+                document.getElementById("calcStatus").classList.add("hidden");
+                showToast(err.message, "error");
+            }
+        }
+
+        async function fetchProfiles() {
+            const res = await fetch("/api/profiles");
+            profiles = await res.json();
+            const select = document.getElementById("profileSelect");
+            select.innerHTML = '<option value="">-- Select Profile --</option>';
+            for (let name in profiles) {
+                if (name === "__hardware__") continue;
+                select.innerHTML += `<option value="${name}">${name}</option>`;
+            }
+        }
+
+        function loadProfile() {
+            const name = document.getElementById("profileSelect").value;
+            if(!name || !profiles[name]) {
+                document.getElementById("currentProfileBadge").classList.add("hidden");
+                return;
+            }
+            
+            const p = profiles[name];
+            document.getElementById("currentProfileTitle").innerText = "Editing: " + name;
+            document.getElementById("newProfileName").value = name;
+            
+            document.getElementById("modelPath").value = p.model || "";
+            document.getElementById("mmprojPath").value = p.mmproj || "";
+            for (let key in fieldMapping) document.getElementById(fieldMapping[key]).value = "";
+            for (let key in checkboxMapping) document.getElementById(checkboxMapping[key]).checked = false;
+            document.getElementById("flagsContainer").innerHTML = "";
+            
+            setSplitterLabels(p.flags && p.flags["-ot"] ? true : false);
+
+            if(p.flags) {
+                for(let key in p.flags) {
+                    if (fieldMapping[key]) {
+                        document.getElementById(fieldMapping[key]).value = p.flags[key];
+                    } else if (checkboxMapping[key]) {
+                        document.getElementById(checkboxMapping[key]).checked = (p.flags[key] === true || p.flags[key] === "true" || p.flags[key] === "on");
+                    } else {
+                        addFlagRow(key, p.flags[key]);
+                    }
+                }
+            }
+
+            let loadOt = p.flags ? p.flags["-ot"] : null;
+            let loadTs = p.flags ? p.flags["-ts"] : null;
+            
+            if(p.splitter) {
+                document.getElementById("totalLayers").value = p.splitter.total || 30;
+                document.getElementById("cuda0").value = p.splitter.c0 || 0;
+                document.getElementById("cuda1").value = p.splitter.c1 || 0;
+                let c0 = parseInt(p.splitter.c0) || 0;
+                let c1 = parseInt(p.splitter.c1) || 0;
+                document.getElementById("cpuLayers").value = (parseInt(p.splitter.total) || 0) - c0 - c1;
+            } else {
+                reverseParseSplitter(loadOt, loadTs);
+            }
+            
+            updateCommandPreview();
+            showToast("Profile loaded successfully.");
+        }
+
+        async function saveProfile() {
+            let name = document.getElementById("newProfileName").value.trim();
+            if(!name) return showToast("Enter a profile name!", "error");
+
+            await fetch(`/api/profiles/${name}`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    model: document.getElementById("modelPath").value,
+                    mmproj: document.getElementById("mmprojPath").value,
+                    flags: getCurrentFlags(),
+                    splitter: {
+                        total: document.getElementById("totalLayers").value,
+                        c0: document.getElementById("cuda0").value,
+                        c1: document.getElementById("cuda1").value
+                    }
+                })
+            });
+            fetchProfiles();
+            showToast("Profile saved.");
+        }
+
+        async function deleteProfile() {
+            const name = document.getElementById("profileSelect").value;
+            if (!name) return showToast("Select a profile to delete.", "error");
+            if (!confirm(`Are you sure you want to delete "${name}"?`)) return;
+
+            const res = await fetch(`/api/profiles/${name}`, { method: "DELETE" });
+            const data = await res.json();
+            if (data.status === "deleted") {
+                document.getElementById("newProfileName").value = "";
+                document.getElementById("modelPath").value = "";
+                document.getElementById("mmprojPath").value = "";
+                document.getElementById("flagsContainer").innerHTML = "";
+                document.getElementById("currentProfileTitle").innerText = "Editing Profile";
+                fetchProfiles();
+                showToast("Profile deleted.");
+            } else {
+                showToast(data.error || "Could not delete profile.", "error");
+            }
+        }
+
+        function toggleHardwarePanel() {
+            const panel = document.getElementById("hardwarePanel");
+            const arrow = document.getElementById("hwToggleArrow");
+            if (panel.classList.contains("hidden")) {
+                panel.classList.remove("hidden");
+                arrow.innerText = "▼";
+            } else {
+                panel.classList.add("hidden");
+                arrow.innerText = "▶";
+            }
+        }
+
+        async function loadHardware() {
+            const res = await fetch("/api/hardware");
+            const data = await res.json();
+            document.getElementById("gpu0_vram").value = data.gpu0_vram ?? 6.0;
+            document.getElementById("gpu0_overhead").value = data.gpu0_overhead ?? 0.0;
+            document.getElementById("gpu0_safety").value = data.gpu0_safety ?? 500.0;
+            document.getElementById("gpu1_vram").value = data.gpu1_vram ?? 8.0;
+            document.getElementById("gpu1_overhead").value = data.gpu1_overhead ?? 1024.0;
+            document.getElementById("gpu1_safety").value = data.gpu1_safety ?? 500.0;
+        }
+
+        async function saveHardware() {
+            const payload = {
+                gpu0_vram: parseFloat(document.getElementById("gpu0_vram").value),
+                gpu0_overhead: parseFloat(document.getElementById("gpu0_overhead").value),
+                gpu0_safety: parseFloat(document.getElementById("gpu0_safety").value),
+                gpu1_vram: parseFloat(document.getElementById("gpu1_vram").value),
+                gpu1_overhead: parseFloat(document.getElementById("gpu1_overhead").value),
+                gpu1_safety: parseFloat(document.getElementById("gpu1_safety").value)
+            };
+            await fetch("/api/hardware", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(payload) });
+            showToast("Hardware config applied dynamically!");
+        }
+
+        async function startServer() {
+            const selectedProfile = document.getElementById("profileSelect").value || null;
+            await fetch("/api/start", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    model: document.getElementById("modelPath").value,
+                    mmproj: document.getElementById("mmprojPath").value,
+                    flags: getCurrentFlags(),
+                    profile: selectedProfile
+                })
+            });
+            showToast("Server launching...");
+            refreshConfig();
+        }
+        
+        async function restartServer() {
+            const statusBadge = document.getElementById("serverStatus");
+            statusBadge.innerText = "Restarting...";
+            statusBadge.className = "text-xs font-bold px-4 py-1.5 rounded select-none bg-yellow-900 text-yellow-200 shadow border border-yellow-800";
+            await fetch("/api/stop", {method: "POST"});
+            setTimeout(async () => { await startServer(); }, 500);
+        }
+        
+        async function stopServer() { 
+            await fetch("/api/stop", {method: "POST"}); 
+            showToast("Server stopped.", "error");
+            refreshConfig();
+        }
+
+        async function refreshConfig() {
+            try {
+                const res = await fetch("/api/config");
+                serverConfig = await res.json();
+                updateProfileBadge();
+            } catch (e) {
+                console.error("Could not refresh config:", e);
+            }
+        }
+
+        function updateProfileBadge() {
+            const badge = document.getElementById("currentProfileBadge");
+            if (serverConfig && serverConfig.currentProfile) {
+                badge.innerText = "Profile: " + serverConfig.currentProfile;
+                badge.classList.remove("hidden");
+            } else {
+                badge.classList.add("hidden");
+            }
+        }
+        
+        // ==========================================
+        // Server Configuration (fetched from backend)
+        // ==========================================
+        let serverConfig = null;
+        async function fetchConfig() {
+            try {
+                const res = await fetch("/api/config");
+                serverConfig = await res.json();
+                console.log("[config]", serverConfig);
+                updateProfileBadge();
+            } catch (e) {
+                console.error("Could not fetch server config:", e);
+            }
+        }
+
+        // Init
+        fetchConfig();
+        fetchProfiles();
+        fetchModels();
+        loadHardware();
+        startLogPolling();
+        updateCommandPreview();
+    </script>
+</body>
+</html>
