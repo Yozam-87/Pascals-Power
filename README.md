@@ -120,7 +120,7 @@ The web interface binds to `localhost:5005` by default. If you change the bind a
 
 ## Support
 
-If this project has been useful, consider [☕ buying me a coffee on Ko-fi](https://ko-fi.com/Yozam-87)!
+If this project has been useful, consider [☕ buying me a coffee on Ko-fi](https://ko-fi.com/Yozam)!
 
 ## License
 
