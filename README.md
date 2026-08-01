@@ -114,15 +114,13 @@ The methodology relies on `llama.cpp`'s `-ot` and `-ts` parameters, which are ha
 | Poor performance with MoE model | Wrong `-ot` pattern or `-ts` mismatch | Use the auto-split calculator, or verify your pattern against the model's layer count |
 | Server launches but UI shows no logs | ANSI log streaming not connected | Check browser console; may need to refresh the page after server starts |
 
-## Known Limitations
-
-- **Mixtral models:** Untested. The methodology should apply, but verify before relying on it.
-- **Single-GPU setups:** Work as a full `llama-server` manager, but the multi-GPU split is the primary design target.
-- **Windows multi-GPU:** Unreliable. Many Windows drivers do not support mixed-generation GPU routing at the driver level.
-
 ## Security Note
 
 The web interface binds to `localhost:5005` by default. If you change the bind address (e.g., to `0.0.0.0`), be aware there is no authentication, so anyone on the network can launch servers and view logs. Keep it local or add your own auth layer if exposing it.
+
+## Support
+
+If this project has been useful, consider [☕ buying me a coffee on Ko-fi](https://ko-fi.com/Yozam-87)!
 
 ## License
 
