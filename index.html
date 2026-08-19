@@ -316,6 +316,7 @@ input[type="checkbox"] { accent-color: #3b82f6; }
         <option value="--alias">
         <option value="--cache-type-k">
         <option value="--cache-type-v">
+        <option value="--load-mode">
     </datalist>
 
     <datalist id="ggufFiles"></datalist>
@@ -438,7 +439,6 @@ input[type="checkbox"] { accent-color: #3b82f6; }
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-2 mt-2">
-                            <!-- UNLOCKED FIELDS: Now editable and focusable -->
                             <div>
                                 <label class="block text-[10px] text-gray-400 mb-1">Layers (--n-gpu-layers)</label>
                                 <input type="text" id="flag_n_gpu_layers" class="w-full bg-gray-700 text-white p-1.5 rounded text-xs border border-gray-600 outline-none focus:ring-blue-500">
@@ -534,7 +534,7 @@ input[type="checkbox"] { accent-color: #3b82f6; }
                         </div>
                         
                         <h3 class="text-sm font-bold text-blue-400 mt-1 border-b border-gray-800 pb-2">Server & Toggles</h3>
-                        <div class="grid grid-cols-3 gap-3 mb-1">
+                        <div class="grid grid-cols-3 gap-3 mb-2">
                             <div>
                                 <label class="block text-[10px] text-gray-400 mb-1">Host (--host)</label>
                                 <input type="text" id="flag_host" value="0.0.0.0" class="w-full bg-gray-700 p-1.5 rounded text-white text-sm outline-none focus:ring-blue-500">
@@ -546,25 +546,35 @@ input[type="checkbox"] { accent-color: #3b82f6; }
                             <div>
                                 <label class="block text-[10px] text-gray-400 mb-1">Reasoning Mode</label>
                                 <select id="flag_reasoning" class="w-full bg-gray-700 p-1.5 rounded text-white text-sm outline-none focus:ring-blue-500">
-                                    <option value="">(None)</option>
+                                    <option value="">auto</option>
                                     <option value="on">on</option>
                                     <option value="off">off</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="grid grid-cols-4 gap-2 text-xs">
-                            <label class="flex items-center gap-1 cursor-pointer bg-gray-800 p-1.5 rounded hover:bg-gray-750 border border-gray-700 transition">
-                                <input type="checkbox" id="flag_fa" class="rounded bg-gray-700 border-gray-600"> <span>FA</span>
-                            </label>
-                            <label class="flex items-center gap-1 cursor-pointer bg-gray-800 p-1.5 rounded hover:bg-gray-750 border border-gray-700 transition">
-                                <input type="checkbox" id="flag_mlock" class="rounded bg-gray-700 border-gray-600"> <span>MLock</span>
-                            </label>
-                            <label class="flex items-center gap-1 cursor-pointer bg-gray-800 p-1.5 rounded hover:bg-gray-750 border border-gray-700 transition">
-                                <input type="checkbox" id="flag_no_mmap" class="rounded bg-gray-700 border-gray-600"> <span>NoMMap</span>
-                            </label>
-                            <label class="flex items-center gap-1 cursor-pointer bg-gray-800 p-1.5 rounded hover:bg-gray-750 border border-gray-700 transition">
-                                <input type="checkbox" id="flag_jinja" class="rounded bg-gray-700 border-gray-600"> <span>Jinja</span>
-                            </label>
+                        <div class="grid grid-cols-3 gap-3 items-end text-xs">
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1">Attention Mode</label>
+                                <label class="flex items-center gap-2 cursor-pointer bg-gray-800 p-1.5 px-3 rounded hover:bg-gray-750 border border-gray-700 transition text-sm text-gray-200">
+                                    <input type="checkbox" id="flag_fa" class="w-4 h-4 rounded bg-gray-700 border-gray-600 focus:ring-blue-500"> <span>Flash Attention</span>
+                                </label>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1">Template Engine</label>
+                                <label class="flex items-center gap-2 cursor-pointer bg-gray-800 p-1.5 px-3 rounded hover:bg-gray-750 border border-gray-700 transition text-sm text-gray-200">
+                                    <input type="checkbox" id="flag_jinja" class="w-4 h-4 rounded bg-gray-700 border-gray-600 focus:ring-blue-500"> <span>Jinja Chat</span>
+                                </label>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1">Load Mode (--load-mode)</label>
+                                <select id="flag_load_mode" class="w-full bg-gray-700 p-1.5 rounded text-white text-sm outline-none focus:ring-blue-500">
+                                    <option value="none">none</option>
+                                    <option value="mmap">mmap</option>
+                                    <option value="mlock">mlock</option>
+                                    <option value="mmap+mlock">mmap+mlock</option>
+                                    <option value="dio">dio</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
@@ -648,13 +658,31 @@ input[type="checkbox"] { accent-color: #3b82f6; }
             "--top-k": "flag_top_k",
             "--repeat-penalty": "flag_repeat_penalty",
             "--repeat-last-n": "flag_repeat_last_n",
-            "--reasoning": "flag_reasoning"
+            "--reasoning": "flag_reasoning",
+            "--load-mode": "flag_load_mode"
+        };
+
+        const flagAliases = {
+            "-m": "--model",
+            "-mm": "--mmproj",
+            "-ngl": "--n-gpu-layers",
+            "--gpu-layers": "--n-gpu-layers",
+            "--tensor-split": "-ts",
+            "--override-tensor": "-ot",
+            "-c": "--ctx-size",
+            "-t": "--threads",
+            "-tb": "--threads-batch",
+            "-b": "--batch-size",
+            "-ub": "--ubatch-size",
+            "-ctk": "--cache-type-k",
+            "-ctv": "--cache-type-v",
+            "-lm": "--load-mode",
+            "-rea": "--reasoning",
+            "--flash-attn": "-fa"
         };
 
         const checkboxMapping = {
             "-fa": "flag_fa",
-            "--mlock": "flag_mlock",
-            "--no-mmap": "flag_no_mmap",
             "--jinja": "flag_jinja"
         };
 
@@ -808,11 +836,11 @@ input[type="checkbox"] { accent-color: #3b82f6; }
             document.getElementById("mmprojPath").value = "";
             for (let key in fieldMapping) {
                 let el = document.getElementById(fieldMapping[key]);
-                if(el) el.value = "";
+                if (el) el.value = "";
             }
             for (let key in checkboxMapping) {
                 let el = document.getElementById(checkboxMapping[key]);
-                if(el) el.checked = false;
+                if (el) el.checked = false;
             }
             document.getElementById("flagsContainer").innerHTML = "";
 
@@ -828,6 +856,11 @@ input[type="checkbox"] { accent-color: #3b82f6; }
 
             let importedOt = "";
             let importedTs = "";
+            let explicitLoadMode = null;
+            let legacyNoMmap = false;
+            let legacyMmap = false;
+            let legacyMlock = false;
+            let legacyDio = false;
 
             for (let i = 0; i < args.length; i++) {
                 if (args[i].startsWith('-')) {
@@ -847,7 +880,20 @@ input[type="checkbox"] { accent-color: #3b82f6; }
                         value = "on";
                     }
 
-                    if (key === "--model") {
+                    if (flagAliases[key]) key = flagAliases[key];
+
+                    if (key === "--load-mode") {
+                        explicitLoadMode = String(value).toLowerCase();
+                    } else if (key === "--no-mmap") {
+                        legacyNoMmap = true;
+                    } else if (key === "--mmap") {
+                        legacyMmap = (value === true || String(value).toLowerCase() === "true" || value === "1");
+                        if (String(value).toLowerCase() === "false" || value === "0") legacyNoMmap = true;
+                    } else if (key === "--mlock") {
+                        legacyMlock = (value === true || String(value).toLowerCase() === "true" || value === "1");
+                    } else if (key === "-dio" || key === "--direct-io") {
+                        legacyDio = true;
+                    } else if (key === "--model") {
                         document.getElementById("modelPath").value = value;
                     } else if (key === "--mmproj") {
                         document.getElementById("mmprojPath").value = value;
@@ -868,6 +914,21 @@ input[type="checkbox"] { accent-color: #3b82f6; }
                     }
                 }
             }
+
+            // Resolve load-mode for imported commands
+            let resolvedLoadMode = "none";
+            if (explicitLoadMode) {
+                resolvedLoadMode = explicitLoadMode;
+            } else if (legacyDio) {
+                resolvedLoadMode = "dio";
+            } else if (legacyMlock) {
+                resolvedLoadMode = (legacyNoMmap) ? "mlock" : "mmap+mlock";
+            } else if (legacyNoMmap) {
+                resolvedLoadMode = "none";
+            } else if (legacyMmap) {
+                resolvedLoadMode = "mmap";
+            }
+            document.getElementById("flag_load_mode").value = resolvedLoadMode;
 
             // Sync visual sliders, but DO NOT overwrite the specific -ot and -ts parsed above!
             reverseParseSplitter(importedOt, importedTs);
@@ -1112,12 +1173,24 @@ input[type="checkbox"] { accent-color: #3b82f6; }
             setSplitterLabels(p.flags && p.flags["-ot"] ? true : false);
 
             if(p.flags) {
+                // Support legacy profile flags: mlock vs mmap+mlock resolution
+                if (!p.flags["--load-mode"] && !p.flags["-lm"]) {
+                    if (p.flags["--mlock"]) {
+                        document.getElementById("flag_load_mode").value = (p.flags["--no-mmap"]) ? "mlock" : "mmap+mlock";
+                    } else if (p.flags["--no-mmap"]) {
+                        document.getElementById("flag_load_mode").value = "none";
+                    } else {
+                        document.getElementById("flag_load_mode").value = "mmap";
+                    }
+                }
+
+                const legacyKeys = ["--no-mmap", "--mlock", "--mmap", "--no-mlock", "-dio", "--direct-io", "-lm"];
                 for(let key in p.flags) {
                     if (fieldMapping[key]) {
                         document.getElementById(fieldMapping[key]).value = p.flags[key];
                     } else if (checkboxMapping[key]) {
                         document.getElementById(checkboxMapping[key]).checked = (p.flags[key] === true || p.flags[key] === "true" || p.flags[key] === "on");
-                    } else {
+                    } else if (!legacyKeys.includes(key)) {
                         addFlagRow(key, p.flags[key]);
                     }
                 }
