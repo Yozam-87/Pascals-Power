@@ -2,7 +2,7 @@
 
 **1.** Strip leading timestamp prefix from `llama-server` log output.
 
-**2.** Expand the custom flag name autocomplete. Ideally the tool would parse `llama-server -h` output to populate the full flag list automatically.
+**2.** ~~Expand the custom flag name autocomplete.~~ ✅ Done — 91 flags parsed from `llama-server -h` and populated via JS array.
 
 ## 🟢 Low
 
