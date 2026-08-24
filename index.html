@@ -306,20 +306,8 @@ input[type="checkbox"] { accent-color: #3b82f6; }
     
     <div id="toastContainer" class="fixed top-6 right-6 z-50 flex flex-col gap-3"></div>
 
-    <datalist id="commonFlags">
-        <option value="--main-gpu">
-        <option value="--split-mode">
-        <option value="--reasoning">
-        <option value="--chat-template-kwargs">
-        <option value="--n-predict">
-        <option value="--slot-save-path">
-        <option value="--alias">
-        <option value="--cache-type-k">
-        <option value="--cache-type-v">
-        <option value="--load-mode">
-    </datalist>
-
     <datalist id="ggufFiles"></datalist>
+    <datalist id="commonFlags"></datalist>
 
     <div class="max-w-[1600px] mx-auto flex flex-col gap-6">
         
@@ -1356,6 +1344,36 @@ input[type="checkbox"] { accent-color: #3b82f6; }
                 console.error("Could not fetch server config:", e);
             }
         }
+        const COMMON_FLAGS = [
+          "--main-gpu", "--split-mode", "--tensor-split", "--n-gpu-layers", "--gpu-layers",
+          "--override-tensor", "--device", "--cpu-moe", "--n-cpu-moe", "--numa",
+          "--load-mode", "--fit", "--fit-target", "--fit-ctx", "--repack",
+          "--op-offload", "--kv-offload",
+          "--ctx-size", "--n-predict", "--threads", "--threads-batch",
+          "--batch-size", "--ubatch-size", "--keep", "--swa-full",
+          "--cache-type-k", "--cache-type-v",
+          "--rope-scaling", "--rope-scale", "--rope-freq-base", "--rope-freq-scale",
+          "--temp", "--temperature", "--top-k", "--top-p", "--min-p", "--typical-p",
+          "--repeat-penalty", "--repeat-last-n", "--presence-penalty", "--frequency-penalty",
+          "--samplers", "--seed", "--grammar", "--json-schema",
+          "--host", "--port", "--cors-origins", "--api-key",
+          "--ssl-key-file", "--ssl-cert-file", "--timeout", "--threads-http",
+          "--sse-ping-interval", "--api-prefix", "--reuse-port",
+          "--reasoning", "--reasoning-format", "--reasoning-effort",
+          "--reasoning-budget", "--reasoning-preserve",
+          "--chat-template", "--chat-template-file", "--chat-template-kwargs",
+          "--jinja", "--skip-chat-parsing", "--prefill-assistant", "--reverse-prompt",
+          "--mmproj", "--mmproj-offload", "--mmproj-device",
+          "--image-min-tokens", "--image-max-tokens",
+          "--lora", "--lora-scaled", "--control-vector",
+          "--log-file", "--log-colors", "--verbose", "--perf", "--metrics",
+          "--slots", "--cache-prompt", "--cache-reuse",
+          "--alias", "--tags", "--embedding", "--rerank", "--ui", "--ui-config",
+          "--tools", "--mcp-servers-config", "--model-url", "--hf-repo",
+          "--slot-save-path", "--parallel", "--cont-batching", "--pooling",
+          "--special", "--warmup", "--flash-attn", "--escape",
+          "--check-tensors", "--override-kv", "--cache-list",
+        ];
 
         // Init
         fetchConfig();
@@ -1364,6 +1382,10 @@ input[type="checkbox"] { accent-color: #3b82f6; }
         loadHardware();
         startLogPolling();
         updateCommandPreview();
+        
+        // ── Populate common flags datalist ──
+        document.getElementById("commonFlags").innerHTML = COMMON_FLAGS
+          .map(f => `<option value="${f}">`).join("");
     </script>
 </body>
 </html>
